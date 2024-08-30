@@ -23,7 +23,11 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 import '@icon-park/react/styles/index.css';
-import { bitable } from '@lark-base-open/js-sdk';
+import {
+  bitable,
+  PermissionEntity,
+  OperationType,
+} from '@lark-base-open/js-sdk';
 
 export const Home = () => {
   const settingModal = useSettingModalStore(
@@ -82,6 +86,17 @@ export const Home = () => {
 
   useEffect(() => {
     const fn = async () => {
+      // 判断是否有表格下载权限
+      // 获取下载权限（下载和打印归属一个权限）
+      const bool = await baseTable.getPermission({
+        entity: PermissionEntity.Base,
+        type: OperationType.Printable,
+      });
+      console.log('bool', bool);
+      if (!bool) {
+        return;
+      }
+
       const table = await baseTable.getActiveTable();
 
       // 获取列信息
@@ -102,6 +117,7 @@ export const Home = () => {
       setRecordIds(recordIdList);
       setActiveRecordId(recordIdList[recordIndex]);
     };
+
     fn();
 
     // 表格选择监听
@@ -128,7 +144,7 @@ export const Home = () => {
               </div>
               <div className="flex flex-col">
                 <h2 className="mb-4">{t('table_elements')}</h2>
-                <div className="mb-4 flex justify-center space-x-2">
+                <div className="flex justify-center mb-4 space-x-2">
                   <Button
                     className="w-[150px]"
                     disabled={!canPre}
@@ -149,7 +165,7 @@ export const Home = () => {
             </div>
           )}
           <div className="relative h-full grow px-[70px] pt-[54px]">
-            <div className="absolute left-0 top-0 w-full">
+            <div className="absolute top-0 left-0 w-full">
               {settingModal && <EditToolBar />}
             </div>
             <div className="h-full grow">
