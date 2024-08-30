@@ -112,7 +112,9 @@ export const Home = () => {
       setFieldIds(fieldIds);
 
       // 获取行信息
-      const recordIdList = await table.getRecordIdList();
+      const { recordIds: recordIdList } = await table.getRecordIdListByPage({
+        pageSize: 200,
+      });
       console.log('recordIdList--->', recordIdList);
       setRecordIds(recordIdList);
       setActiveRecordId(recordIdList[recordIndex]);
